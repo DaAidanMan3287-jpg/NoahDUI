@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Countdown — Jan 14, 2026 09:01 (America/Chicago)</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#7dd3fc;
+      --muted:#94a3b8;
+      --white:#e6eef8;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, #071022 0%, #071425 100%);
+      color:var(--white);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:16px;
+      padding:28px;
+      max-width:820px;
+      width:100%;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+      text-align:center;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    h1{
+      margin:0 0 8px 0;
+      font-size:1.4rem;
+      letter-spacing:-0.02em;
+    }
+    p.lead{
+      margin:0 0 22px 0;
+      color:var(--muted);
+      font-size:0.95rem;
+    }
+    .countdown{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:12px;
+      margin-bottom:18px;
+    }
+    .unit{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:18px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.02);
+    }
+    .number{
+      font-size:2.1rem;
+      font-weight:700;
+      line-height:1;
+      color:var(--white);
+    }
+    .label{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:0.82rem;
+      text-transform:uppercase;
+      letter-spacing:0.12em;
+    }
+    .meta{
+      margin-top:12px;
+      font-size:0.85rem;
+      color:var(--muted);
+    }
+    .done{
+      font-size:1.1rem;
+      color:var(--accent);
+      font-weight:600;
+    }
+
+    /* Responsive */
+    @media (max-width:560px){
+      .countdown{ grid-template-columns: repeat(2,1fr); }
+      .number{ font-size:1.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card" role="region" aria-label="Countdown to January 14, 2026 09:01 America Chicago">
+    <h1>Countdown</h1>
+    <p class="lead">Target: <strong>January 14, 2026 — 09:01 AM (America/Chicago)</strong></p>
+
+    <div id="countdown" class="countdown" aria-live="polite">
+      <div class="unit">
+        <div id="days" class="number">—</div>
+        <div class="label">Days</div>
+      </div>
+      <div class="unit">
+        <div id="hours" class="number">—</div>
+        <div class="label">Hours</div>
+      </div>
+      <div class="unit">
+        <div id="minutes" class="number">—</div>
+        <div class="label">Minutes</div>
+      </div>
+      <div class="unit">
+        <div id="seconds" class="number">—</div>
+        <div class="label">Seconds</div>
+      </div>
+    </div>
+
+    <div id="message" class="meta">This countdown is anchored to <em>America/Chicago</em> time (Central Standard Time, UTC−06:00).</div>
+  </div>
+
+  <script>
+    (function () {
+      // Target moment: Jan 14 2026 09:01 America/Chicago (CST = UTC-6)
+      // Convert that to an exact UTC timestamp:
+      // 2026-01-14 09:01 CST -> 2026-01-14 15:01 UTC
+      const targetUtcMillis = Date.UTC(2026, 0, 14, 15, 1, 0); // months are 0-indexed
+
+      // DOM refs
+      const daysEl = document.getElementById('days');
+      const hoursEl = document.getElementById('hours');
+      const minutesEl = document.getElementById('minutes');
+      const secondsEl = document.getElementById('seconds');
+      const messageEl = document.getElementById('message');
+
+      function pad(n){ return String(n).padStart(2, '0'); }
+
+      function update() {
+        const now = Date.now();
+        let diff = targetUtcMillis - now;
+
+        if (diff <= 0) {
+          // reached or passed target
+          daysEl.textContent = '00';
+          hoursEl.textContent = '00';
+          minutesEl.textContent = '00';
+          secondsEl.textContent = '00';
+          messageEl.innerHTML = '<span class="done">🎉 The target time has arrived!</span>';
+          clearInterval(intervalId);
+          return;
+        }
+
+        // compute components
+        const secTotal = Math.floor(diff / 1000);
+        const days = Math.floor(secTotal / 86400);
+        const hours = Math.floor((secTotal % 86400) / 3600);
+        const minutes = Math.floor((secTotal % 3600) / 60);
+        const seconds = secTotal % 60;
+
+        daysEl.textContent = String(days);
+        hoursEl.textContent = pad(hours);
+        minutesEl.textContent = pad(minutes);
+        secondsEl.textContent = pad(seconds);
+
+        // Accessibility-friendly text (keeps aria-live updated)
+        messageEl.textContent = `Time remaining: ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds. (Target: Jan 14 2026 09:01 America/Chicago)`;
+      }
+
+      // Kick off
+      update();
+      const intervalId = setInterval(update, 1000);
+
+      // If browser tab inactive, also run a fallback to ensure update runs when tab becomes visible
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) update();
+      });
+    })();
+  </script>
+</body>
+</html>
